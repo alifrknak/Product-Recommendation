@@ -4,6 +4,7 @@ using Microsoft.Data.SqlTypes;
 using System.ComponentModel.DataAnnotations.Schema;
 
 
+// veritabanýndaki ürünleri temsil eden model sýnýfý
 public class Product
 {
     public int Id { get; set; }

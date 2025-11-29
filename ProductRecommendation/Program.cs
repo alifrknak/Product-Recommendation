@@ -39,7 +39,7 @@ public class Program
 
         app.MapGet("/api/products", async (ProductContext db) =>
         {
-            return Results.Ok(await db.Products.ToListAsync());
+            return Results.Ok(db.Products.Select(x => new GetProductModel(x.Id,x.Name, x.Description)).ToList());
         });
 
 
@@ -82,12 +82,13 @@ public class Program
 
             var similarProducts = await db.Products
                 .Where(p => p.Id != id) // ayný ürünü hariç tut
-                .OrderBy(p => EF.Functions.VectorDistance(
+                .OrderBy(p => EF.Functions.VectorDistance(// benzerliðe göre sýrala
                     "cosine", // cosine benzerlik metriðini kullan
                     p.Embedding,
                     targetVector
                 )) // benzerlik sýrasýna göre sýrala
                 .Take(3) // en benzer 3 ürünü al
+                .Select(p => new GetProductModel(p.Id,p.Name, p.Description))
                 .ToListAsync();
 
             return Results.Ok(similarProducts);

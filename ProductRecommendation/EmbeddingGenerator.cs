@@ -9,7 +9,7 @@ public class EmbeddingGenerator
     public static async Task<Embedding<float>> GenerateEmbedding(string input)
     {
         var model = "gemini-embedding-001";
-
+        
         IEmbeddingGenerator<string, Embedding<float>> generator =
       new GeminiEmbeddingGenerator(new GeminiDotnet.GeminiClientOptions
       {
