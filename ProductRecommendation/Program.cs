@@ -2,6 +2,7 @@
 using Microsoft.Data.SqlTypes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.VectorData;
 using ProductRecommendation.DataAccess;
 using ProductRecommendation.Models;
 
@@ -21,7 +22,7 @@ public class Program
         builder.Configuration.AddEnvironmentVariables();
 
         builder.Services.AddDbContext<ProductContext>(options =>
-           options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+           options.UseSqlServer(Environment.GetEnvironmentVariable("ConnectionStrings")));
 
 
         var app = builder.Build();
@@ -33,6 +34,7 @@ public class Program
         }
 
         app.Services.CreateScope().ServiceProvider.GetRequiredService<ProductContext>().Database.Migrate();
+
 
 
         app.MapGet("/api/products", async (ProductContext db) =>
@@ -81,7 +83,7 @@ public class Program
             var similarProducts = await db.Products
                 .Where(p => p.Id != id) // ayný ürünü hariç tut
                 .OrderBy(p => EF.Functions.VectorDistance(
-                    "cosine",
+                    "cosine", // cosine benzerlik metriðini kullan
                     p.Embedding,
                     targetVector
                 )) // benzerlik sýrasýna göre sýrala
